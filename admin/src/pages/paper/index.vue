@@ -166,7 +166,7 @@ const COLUMNS: any = [
   },
   {
     title: '试卷分数',
-    colKey: 'score',
+    colKey: 'scoreStr',
     width: 80,
   },
   {

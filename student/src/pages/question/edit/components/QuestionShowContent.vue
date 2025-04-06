@@ -2,7 +2,7 @@
   <div class="operator-block">
     <div class="operator-content">
       <div class="operator-title">
-        <div v-if="qIndex" class="num">{{ qIndex }}</div>
+        <div v-if="question.itemOrder" class="num">{{ question.itemOrder }}</div>
         <t-tag v-if="qType === 4 || qType === 5" theme="warning">人工批阅</t-tag>
         <t-tag v-else theme="success">机器批阅</t-tag>
         <t-tag>{{ enumItemStore.enumFormat(questionTypeEnumText, qType) }}</t-tag>
@@ -44,7 +44,7 @@ import { computed } from 'vue';
 
 import { useEnumItem } from '@/store/modules/enumitem';
 
-const { question, qType, qIndex } = defineProps({
+const { question, qType } = defineProps({
   question: {
     type: Object,
     default: () => ({}),
