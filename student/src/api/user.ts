@@ -55,4 +55,9 @@ export default {
       url: '/user/login',
       data: query,
     }),
+  register: (query: UserQuery) =>
+    request.post({
+      url: '/student/user/register',
+      data: query,
+    }),
 };

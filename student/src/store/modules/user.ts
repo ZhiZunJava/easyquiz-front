@@ -19,6 +19,11 @@ export const useUserStore = defineStore('user', {
         Cookies.set('adminUserName', query.userName, { expires: 60 });
       });
     },
+    async register(query: any) {
+      await user.register(query).then(() => {
+        // this.userName = query.userName;
+      });
+    },
     async getUserInfo() {
       await user.getCurrentUser().then((res) => {
         this.userInfo = res.response;
