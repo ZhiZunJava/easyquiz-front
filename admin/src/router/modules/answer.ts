@@ -20,6 +20,18 @@ export default [
         component: () => import('@/pages/answer/complete.vue'),
         meta: { title: { zh_CN: '已完成试卷管理', en_US: 'Complete Paper List Manager' } },
       },
+      {
+        path: 'completeRead',
+        name: 'AnswerCompleteRead',
+        component: () => import('@/pages/answer/completeRead.vue'),
+        meta: { title: { zh_CN: '查看试卷', en_US: 'Answer Complete Read Paper' }, hidden: true },
+      },
+      {
+        path: 'judge',
+        name: 'AnswerJudge',
+        component: () => import('@/pages/answer/judge.vue'),
+        meta: { title: { zh_CN: '批改试卷', en_US: 'Judge Paper Manager' }, hidden: true },
+      },
     ],
   },
 ];

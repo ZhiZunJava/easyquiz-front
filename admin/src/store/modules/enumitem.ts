@@ -57,7 +57,7 @@ export const useEnumItem = defineStore('enumItem', {
         paperTypeEnum: [
           { key: 1, value: '固定试卷' },
           { key: 2, value: '时段试卷' },
-          // { key: 3, value: '智能组卷试卷' },
+          { key: 3, value: '智能组卷试卷' },
         ],
       },
       question: {
@@ -75,6 +75,22 @@ export const useEnumItem = defineStore('enumItem', {
           { key: 4, value: '/question/edit/gapFilling', name: '填空题' },
           { key: 5, value: '/question/edit/shortAnswer', name: '简答题' },
         ],
+        answer: {
+          doRightTag: [
+            { key: true, value: 'success' },
+            { key: false, value: 'danger' },
+            { key: null, value: 'warning' },
+          ],
+          doRightEnum: [
+            { key: true, value: '正确' },
+            { key: false, value: '错误' },
+            { key: null, value: '待批改' },
+          ],
+          doCompletedTag: [
+            { key: false, value: 'default' },
+            { key: true, value: 'success' },
+          ],
+        },
       },
     },
   }),

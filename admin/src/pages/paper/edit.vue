@@ -460,6 +460,16 @@ onMounted(() => {
 });
 </script>
 <style lang="less" scoped>
+.base-form {
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+  padding: 20px;
+
+  :deep(.t-form__item) {
+    margin-bottom: 16px;
+  }
+}
+
 .list-common-table {
   background-color: var(--td-bg-color-container);
   padding: var(--td-comp-paddingTB-xxl) var(--td-comp-paddingLR-xxl);
@@ -467,6 +477,8 @@ onMounted(() => {
 
   .table-container {
     margin-top: var(--td-comp-margin-xxl);
+    height: calc(100vh - 350px);
+    overflow-y: auto;
   }
 }
 
