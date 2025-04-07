@@ -5,17 +5,16 @@
         <t-col :span="10">
           <t-row :gutter="[24, 24]">
             <t-col :span="4">
-              <t-form-item label="题目年级" name="level">
+              <t-form-item label="试卷类型" name="paperType">
                 <t-select
-                  v-model="queryParam.level"
+                  v-model="queryParam.paperType"
                   class="form-item-content"
-                  placeholder="请选择题目年级"
+                  placeholder="请选择试卷类型"
                   clearable
-                  @change="levelChange"
                 >
                   >
                   <t-option
-                    v-for="item in levelEnumText"
+                    v-for="item in paperEunmText"
                     :key="item.key"
                     :label="item.value"
                     :value="item.key"
@@ -35,26 +34,8 @@
                   <t-option
                     v-for="item in subjectFilter"
                     :key="item.id"
-                    :label="item.name + ' ( ' + item.levelName + ' )'"
-                    :value="item.id"
-                  ></t-option>
-                </t-select>
-              </t-form-item>
-            </t-col>
-            <t-col :span="4">
-              <t-form-item label="试卷类型" name="paperType">
-                <t-select
-                  v-model="queryParam.paperType"
-                  class="form-item-content"
-                  placeholder="请选择题目类型"
-                  clearable
-                >
-                  >
-                  <t-option
-                    v-for="item in paperEunmText"
-                    :key="item.key"
-                    :label="item.value"
-                    :value="item.key"
+                    :label="item.name"
+                    :value="Number(item.id)"
                   ></t-option>
                 </t-select>
               </t-form-item>
@@ -63,13 +44,9 @@
         </t-col>
 
         <t-col :span="2" class="operation-container">
-          <t-button theme="primary" @click="router.push('/paper/edit')">
-            {{ t('components.commonTable.add') }}
-          </t-button>
           <t-button theme="primary" type="submit">
             {{ t('components.commonTable.query') }}
           </t-button>
-          <t-button type="reset" variant="base" theme="default"> {{ t('components.commonTable.reset') }} </t-button>
         </t-col>
       </t-row>
     </t-form>
@@ -87,26 +64,15 @@
       >
         <template #op="slotProps">
           <t-space>
-            <t-link theme="primary"> 预览 </t-link>
-
-            <t-link theme="primary" @click="editQuestion(slotProps.row)"> 编辑 </t-link>
-
-            <t-link theme="danger" @click="handleClickDelete(slotProps.row.id)"> 删除</t-link>
+            <t-link theme="primary" @click="toDOPaper(slotProps.row.id)"> 开始答题 </t-link>
           </t-space>
         </template>
       </t-table>
-      <t-dialog
-        v-model:visible="confirmVisible"
-        header="确认删除当前所选试卷？"
-        :body="confirmBody"
-        :on-cancel="onCancel"
-        @confirm="onConfirmDelete"
-      />
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { MessagePlugin, TooltipProps } from 'tdesign-vue-next';
+import { TooltipProps } from 'tdesign-vue-next';
 import { computed, onMounted, ref } from 'vue';
 
 import examPaper from '@/api/examPaper';
@@ -117,20 +83,16 @@ import { useEnumItem } from '@/store/modules/enumitem';
 
 const useExamStore = useExam();
 const enumItemStore = useEnumItem();
-const levelEnumText = computed(() => enumItemStore.user.levelEnum);
 const paperEunmText = computed(() => enumItemStore.exam.examPaper.paperTypeEnum);
 
 const queryParam = ref({
-  paperType: undefined,
+  paperType: 1,
   subjectId: undefined,
-  level: undefined,
 });
 
 const data = ref([]);
 const total = ref(0);
-const deleteIdx = ref(-1);
 const dataLoading = ref(false);
-const confirmVisible = ref(false);
 const subjectFilter = ref();
 const subjects = computed(() => useExamStore.subjects);
 const rowKey = 'id';
@@ -148,7 +110,7 @@ const COLUMNS: any = [
     colKey: 'subjectId',
     width: 150,
     cell: (h: any, { row }: { row: any }) => {
-      return useExamStore.subjectEnumFormat(subjects.value, row.subjectId);
+      return useExamStore.subjectEnumFormat(subjects.value, String(row.subjectId));
     },
   },
   {
@@ -166,7 +128,7 @@ const COLUMNS: any = [
   },
   {
     title: '试卷分数',
-    colKey: 'score',
+    colKey: 'scoreStr',
     width: 80,
   },
   {
@@ -187,6 +149,10 @@ const COLUMNS: any = [
     title: '操作',
   },
 ];
+
+const toDOPaper = (id: any) => {
+  router.push({ path: '/do', query: { id } });
+};
 
 const pagination = ref({
   defaultPageSize: 20,
@@ -249,48 +215,10 @@ const resetData = () => {
   fetchData();
 };
 
-const handleClickDelete = (id: number) => {
-  deleteIdx.value = id;
-  confirmVisible.value = true;
-};
-
-const resetIdx = () => {
-  deleteIdx.value = -1;
-};
-
-const confirmBody = computed(() => {
-  return `删除后，该试卷的所有信息将被清空，且无法恢复`;
-});
-
-const onCancel = () => {
-  resetIdx();
-};
-
-const onConfirmDelete = async () => {
-  await examPaper
-    .deletePaper(deleteIdx.value)
-    .then(() => {
-      confirmVisible.value = false;
-      MessagePlugin.success('删除成功');
-      resetIdx();
-      fetchData();
-    })
-    .catch((error) => {
-      MessagePlugin.error(error);
-    });
-};
-
-const levelChange = () => {
-  queryParam.value.subjectId = undefined;
-  subjectFilter.value = subjects.value.filter((item: any) => item.level === queryParam.value.level);
-};
-
-const editQuestion = (row: any) => {
-  router.push({ path: '/paper/edit', query: { id: row.id } });
-};
-
 onMounted(() => {
-  useExamStore.initSubject();
+  useExamStore.initSubject(() => {
+    subjectFilter.value = subjects.value;
+  });
   fetchData();
 });
 </script>

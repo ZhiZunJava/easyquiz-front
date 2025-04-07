@@ -5,25 +5,6 @@
         <t-col :span="10">
           <t-row :gutter="[24, 24]">
             <t-col :span="4">
-              <t-form-item label="题目年级" name="level">
-                <t-select
-                  v-model="queryParam.level"
-                  class="form-item-content"
-                  placeholder="请选择题目年级"
-                  clearable
-                  @change="levelChange"
-                >
-                  >
-                  <t-option
-                    v-for="item in levelEnumText"
-                    :key="item.key"
-                    :label="item.value"
-                    :value="item.key"
-                  ></t-option>
-                </t-select>
-              </t-form-item>
-            </t-col>
-            <t-col :span="4">
               <t-form-item label="题目学科" name="subjectId">
                 <t-select
                   v-model="queryParam.subjectId"
@@ -35,26 +16,8 @@
                   <t-option
                     v-for="item in subjectFilter"
                     :key="item.id"
-                    :label="item.name + ' ( ' + item.levelName + ' )'"
-                    :value="item.id"
-                  ></t-option>
-                </t-select>
-              </t-form-item>
-            </t-col>
-            <t-col :span="4">
-              <t-form-item label="题目类型" name="questionType">
-                <t-select
-                  v-model="queryParam.questionType"
-                  class="form-item-content"
-                  placeholder="请选择题目类型"
-                  clearable
-                >
-                  >
-                  <t-option
-                    v-for="item in questionTypeEnumText"
-                    :key="item.key"
-                    :label="item.value"
-                    :value="item.key"
+                    :label="item.name"
+                    :value="Number(item.id)"
                   ></t-option>
                 </t-select>
               </t-form-item>
@@ -66,7 +29,6 @@
           <t-button theme="primary" type="submit">
             {{ t('components.commonTable.query') }}
           </t-button>
-          <t-button type="reset" variant="base" theme="default"> {{ t('components.commonTable.reset') }} </t-button>
         </t-col>
       </t-row>
     </t-form>
@@ -84,58 +46,45 @@
       >
         <template #op="slotProps">
           <t-space>
-            <t-link theme="primary" @click="showQuestion(slotProps.row)"> 预览 </t-link>
-
-            <t-link theme="danger" @click="handleClickDelete(slotProps.row.id)"> 删除</t-link>
+            <t-link v-if="slotProps.row.status === 2" theme="primary" @click="toDOPaper(slotProps.row.id)">
+              查看试卷
+            </t-link>
           </t-space>
         </template>
       </t-table>
-      <question-show
-        v-model:visible="questionShowConfig.dialog"
-        :question="questionShowConfig.question"
-        :q-type="questionShowConfig.qType"
-      />
     </div>
   </div>
 </template>
-<script setup lang="ts">
+<script setup lang="tsx">
+import { CheckCircleFilledIcon, PendingFilledIcon } from 'tdesign-icons-vue-next';
 import { TooltipProps } from 'tdesign-vue-next';
-import { computed, onMounted, reactive, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
-import question from '@/api/question';
+import examPaperAnswer from '@/api/examPaperAnswer';
 import { t } from '@/locales';
+import router from '@/router';
 import { useExam } from '@/store';
 import { useEnumItem } from '@/store/modules/enumitem';
 
-import QuestionShow from './edit/components/QuestionShow.vue';
-
 const useExamStore = useExam();
 const enumItemStore = useEnumItem();
-const levelEnumText = computed(() => enumItemStore.user.levelEnum);
-const questionTypeEnumText = computed(() => enumItemStore.exam.question.typeEnum);
-const difficultyEnumText = computed(() => enumItemStore.user.difficulty);
+const paperEunmText = computed(() => enumItemStore.exam.examPaper.paperTypeEnum);
+const statusEnum = computed(() => enumItemStore.exam.examPaperAnswer.statusEnum);
+const statusTag = computed(() => enumItemStore.exam.examPaperAnswer.statusTag);
 
 const queryParam = ref({
-  questionType: undefined,
+  paperType: 1,
   subjectId: undefined,
-  level: undefined,
 });
 
 const data = ref([]);
 const total = ref(0);
-const deleteIdx = ref(-1);
 const dataLoading = ref(false);
-const confirmVisible = ref(false);
 const subjectFilter = ref();
 const subjects = computed(() => useExamStore.subjects);
 const rowKey = 'id';
 const verticalAlign = 'top' as const;
 const hover = true;
-const questionShowConfig = reactive({
-  qType: 0,
-  dialog: false,
-  question: {},
-});
 
 const COLUMNS: any = [
   {
@@ -144,43 +93,68 @@ const COLUMNS: any = [
     width: 100,
   },
   {
-    title: '学科名称',
+    title: '试卷学科名称',
     colKey: 'subjectId',
     width: 150,
     cell: (h: any, { row }: { row: any }) => {
-      return useExamStore.subjectEnumFormat(subjects.value, row.subjectId);
+      return useExamStore.subjectEnumFormat(subjects.value, String(row.subjectId));
     },
   },
   {
-    title: '题目类型',
-    colKey: 'questionType',
-    width: 150,
-    cell: (h: any, { row }: { row: any }) => {
-      return enumItemStore.enumFormat(questionTypeEnumText.value, row.questionType);
-    },
-  },
-  {
-    title: '题目标题',
-    colKey: 'shortTitle',
+    title: '试卷标题',
+    colKey: 'paperName',
     ellipsis: { theme: 'light' } as TooltipProps,
   },
   {
-    title: '分数',
-    colKey: 'score',
+    title: '试卷类型',
+    colKey: 'paperType',
+    width: 150,
+    cell: (h: any, { row }: { row: any }) => {
+      return enumItemStore.enumFormat(paperEunmText.value, row.paperType);
+    },
+  },
+  {
+    title: '试卷总分',
+    colKey: 'paperScore',
     width: 80,
   },
   {
-    title: '难度',
-    colKey: 'difficult',
+    title: '系统判分',
+    colKey: 'systemScore',
     width: 80,
-    cell: (h: any, { row }: { row: any }) => {
-      return `${row.difficult} (${enumItemStore.enumFormat(difficultyEnumText.value, row.difficult)})`;
-    },
+  },
+  {
+    title: '最终得分',
+    colKey: 'userScore',
+    width: 80,
+  },
+  {
+    title: '试卷题数',
+    colKey: 'questionCount',
+    width: 80,
+  },
+  {
+    title: '正确题数',
+    colKey: 'questionCorrect',
+    width: 80,
   },
   {
     title: '操作时间',
     colKey: 'createTime',
     width: 200,
+  },
+  {
+    title: '试卷状态',
+    colKey: 'status',
+    width: 150,
+    cell: (h: any, { row }: { row: any }) => {
+      return (
+        <t-tag shape="round" theme={enumItemStore.enumFormat(statusTag.value, row.status)} variant="light-outline">
+          {row.status === 2 ? <CheckCircleFilledIcon></CheckCircleFilledIcon> : <PendingFilledIcon></PendingFilledIcon>}
+          {enumItemStore.enumFormat(statusEnum.value, row.status)}
+        </t-tag>
+      );
+    },
   },
   {
     align: 'left',
@@ -191,19 +165,16 @@ const COLUMNS: any = [
   },
 ];
 
+const toDOPaper = (id: any) => {
+  const url = router.resolve({ path: '/read', query: { id } });
+  window.open(url.href, '_blank');
+};
+
 const pagination = ref({
   defaultPageSize: 20,
   total: 100,
   defaultCurrent: 1,
 });
-
-const showQuestion = (row: any) => {
-  question.select(row.id).then((res) => {
-    questionShowConfig.qType = res.questionType;
-    questionShowConfig.question = res;
-    questionShowConfig.dialog = true;
-  });
-};
 
 const rehandleChange = (changeParams: any) => {
   if (changeParams.pagination?.current) {
@@ -228,7 +199,7 @@ const fetchData = async () => {
       }
     });
 
-    await question.pageList(query).then((res) => {
+    await examPaperAnswer.pageList(query).then((res) => {
       data.value = res.list;
       total.value = res.total;
       pagination.value = {
@@ -260,18 +231,10 @@ const resetData = () => {
   fetchData();
 };
 
-const handleClickDelete = (id: number) => {
-  deleteIdx.value = id;
-  confirmVisible.value = true;
-};
-
-const levelChange = () => {
-  queryParam.value.subjectId = undefined;
-  subjectFilter.value = subjects.value.filter((item: any) => item.level === queryParam.value.level);
-};
-
 onMounted(() => {
-  useExamStore.initSubject();
+  useExamStore.initSubject(() => {
+    subjectFilter.value = subjects.value;
+  });
   fetchData();
 });
 </script>

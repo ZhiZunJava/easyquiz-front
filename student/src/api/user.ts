@@ -5,47 +5,37 @@ interface UserQuery {
 }
 
 export default {
-  getUserPageList: (query: UserQuery) =>
+  getUserEvent: () =>
     request.post({
-      url: '/admin/user/page/list',
-      data: query,
-    }),
-  getUserEventPageList: (query: UserQuery) =>
-    request.post({
-      url: '/admin/user/event/page/list',
-      data: query,
-    }),
-  createUser: (query: UserQuery) =>
-    request.post({
-      url: '/admin/user/edit',
-      data: query,
-    }),
-  selectUser: (id: string | number) =>
-    request.post({
-      url: `/admin/user/select/${id}`,
+      url: '/student/user/log',
     }),
   getCurrentUser: () =>
     request.post({
-      url: '/admin/user/current',
+      url: '/student/user/current',
     }),
-  updateUser: (query: UserQuery) =>
+  update: () =>
     request.post({
-      url: '/admin/user/update',
+      url: '/student/user/update',
+    }),
+  messagePageList: (query: UserQuery) =>
+    request.post({
+      url: '/student/user/message/page',
       data: query,
     }),
-  changeStatus: (id: string | number) =>
+  password: (query: UserQuery) =>
     request.post({
-      url: `/admin/user/changeStatus/${id}`,
-    }),
-  deleteUser: (id: string | number) =>
-    request.post({
-      url: `/admin/user/delete/${id}`,
-    }),
-  selectByUserName: (query: UserQuery) =>
-    request.post({
-      url: '/admin/user/selectByUserName',
+      url: '/student/user/password',
       data: query,
     }),
+  read: (id: number) =>
+    request.post({
+      url: `/student/user/message/read/${id}`,
+    }),
+  unreadCount: () =>
+    request.post({
+      url: '/student/user/message/unreadCount',
+    }),
+
   logout: () =>
     request.post({
       url: '/user/logout',

@@ -7,25 +7,11 @@ interface UserQuery {
 export default {
   list: (query?: UserQuery) =>
     request.post({
-      url: '/admin/education/subject/list',
-      data: query,
-    }),
-  pageList: (query: UserQuery) =>
-    request.post({
-      url: '/admin/education/subject/page',
-      data: query,
-    }),
-  edit: (query: UserQuery) =>
-    request.post({
-      url: '/admin/education/subject/edit',
+      url: '/student/education/subject/list',
       data: query,
     }),
   select: (id: string | number) =>
     request.post({
-      url: `/admin/education/subject/select/${id}`,
-    }),
-  deleteSubject: (id: string | number) =>
-    request.post({
-      url: `/admin/education/subject/delete/${id}`,
+      url: `/student/education/subject/select/${id}`,
     }),
 };

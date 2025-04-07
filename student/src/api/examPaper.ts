@@ -7,20 +7,16 @@ interface UserQuery {
 export default {
   pageList: (query?: UserQuery) =>
     request.post({
-      url: '/admin/exam/paper/page',
-      data: query,
-    }),
-  edit: (query: UserQuery) =>
-    request.post({
-      url: '/admin/exam/paper/edit',
+      url: '/student/exam/paper/pageList',
       data: query,
     }),
   select: (id: string | number) =>
     request.post({
-      url: `/admin/exam/paper/select/${id}`,
+      url: `/student/exam/paper/select/${id}`,
     }),
-  deletePaper: (id: string | number) =>
+  generate: (query?: UserQuery) =>
     request.post({
-      url: `/admin/exam/paper/delete/${id}`,
+      url: '/student/exam/paper/generate',
+      data: query,
     }),
 };

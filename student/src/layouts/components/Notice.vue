@@ -4,24 +4,16 @@
       <div class="header-msg">
         <div class="header-msg-top">
           <p>{{ t('layout.notice.title') }}</p>
-          <t-button
-            v-if="unreadMsg.length > 0"
-            class="clear-btn"
-            variant="text"
-            theme="primary"
-            @click="setRead('all')"
-            >{{ t('layout.notice.clear') }}</t-button
-          >
         </div>
-        <t-list v-if="unreadMsg.length > 0" class="narrow-scrollbar" :split="false">
-          <t-list-item v-for="(item, index) in unreadMsg" :key="index">
+        <t-list v-if="msgData.length > 0" class="narrow-scrollbar" :split="false">
+          <t-list-item v-for="(item, index) in msgData" :key="index">
             <div>
               <p class="msg-content">{{ item.content }}</p>
-              <p class="msg-type">{{ item.type }}</p>
+              <p class="msg-type">{{ item.title }}</p>
             </div>
-            <p class="msg-time">{{ item.date }}</p>
+            <p class="msg-time">{{ item.createTime }}</p>
             <template #action>
-              <t-button size="small" variant="outline" @click="setRead('radio', item)">
+              <t-button size="small" variant="outline" @click="setRead(item)">
                 {{ t('layout.notice.setRead') }}
               </t-button>
             </template>
@@ -32,14 +24,14 @@
           <img src="https://tdesign.gtimg.com/pro-template/personal/nothing.png" alt="空" />
           <p>{{ t('layout.notice.empty') }}</p>
         </div>
-        <div v-if="unreadMsg.length > 0" class="header-msg-bottom">
+        <div v-if="msgData.length > 0" class="header-msg-bottom">
           <t-button class="header-msg-bottom-link" variant="text" theme="default" block @click="goDetail">{{
             t('layout.notice.viewAll')
           }}</t-button>
         </div>
       </div>
     </template>
-    <t-badge :count="unreadMsg.length" :offset="[4, 4]">
+    <t-badge :count="unreadCount" :offset="[4, 4]">
       <t-button theme="default" shape="square" variant="text">
         <t-icon name="mail" />
       </t-button>
@@ -49,35 +41,39 @@
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
+import { computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 
+import user from '@/api/user';
 import { t } from '@/locales';
-import { useNotificationStore } from '@/store';
+import { useNotificationStore, useUserStore } from '@/store';
 import type { NotificationItem } from '@/types/interface';
 
 const router = useRouter();
+const userStore = useUserStore();
 const store = useNotificationStore();
-const { msgData, unreadMsg } = storeToRefs(store);
+const unreadCount = computed(() => userStore.messageCount);
+const { msgData } = storeToRefs(store);
 
-const setRead = (type: string, item?: NotificationItem) => {
-  const changeMsg = msgData.value;
-  if (type === 'all') {
-    changeMsg.forEach((e) => {
-      e.status = false;
+const setRead = async (item: NotificationItem) => {
+  if (item.id) {
+    user.read(item.id).then((_res) => {
+      const index = msgData.value.findIndex((i) => i.id === item.id);
+      msgData.value.splice(index, 1);
+      userStore.messageCountSub(1);
     });
-  } else {
-    changeMsg.forEach((e) => {
-      if (e.id === item?.id) {
-        e.status = false;
-      }
-    });
+    store.setMsgData(msgData.value);
   }
-  store.setMsgData(changeMsg);
 };
 
 const goDetail = () => {
-  router.push('/detail/secondary');
+  router.push('/user/message');
 };
+
+onMounted(async () => {
+  await userStore.getUserMessageInfo();
+  await store.init(1, 5);
+});
 </script>
 
 <style lang="less" scoped>

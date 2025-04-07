@@ -13,7 +13,7 @@ export const useExam = defineStore('exam', {
     subjectEnumFormat: () => (array: any, key: any) => {
       for (const item of array) {
         if (item.id === key) {
-          return `${item.name} ( ${item.levelName} )`;
+          return `${item.name}`;
         }
       }
       return null;

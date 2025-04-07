@@ -6,8 +6,9 @@ import router from '@/router';
 
 export const useUserStore = defineStore('user', {
   state: () => ({
-    userName: Cookies.get('adminUserName'),
-    userInfo: Cookies.get('adminUserInfo'),
+    userName: Cookies.get('studentUserName'),
+    userInfo: Cookies.get('studentUserInfo'),
+    messageCount: 0,
   }),
   getters: {
     getUserName: (state) => state.userName,
@@ -16,7 +17,7 @@ export const useUserStore = defineStore('user', {
     async login(query: any) {
       await user.login(query).then(() => {
         this.userName = query.userName;
-        Cookies.set('adminUserName', query.userName, { expires: 60 });
+        Cookies.set('studentUserName', query.userName, { expires: 60 });
       });
     },
     async register(query: any) {
@@ -27,7 +28,7 @@ export const useUserStore = defineStore('user', {
     async getUserInfo() {
       await user.getCurrentUser().then((res) => {
         this.userInfo = res.response;
-        Cookies.set('adminUserInfo', res.response, { expires: 60 });
+        Cookies.set('studentUserInfo', res.response, { expires: 60 });
       });
     },
     async logout() {
@@ -36,6 +37,14 @@ export const useUserStore = defineStore('user', {
         Cookies.remove('adminUserInfo');
         router.push('/login');
       });
+    },
+    async getUserMessageInfo() {
+      await user.unreadCount().then((res) => {
+        this.messageCount = res;
+      });
+    },
+    async messageCountSub(count: number) {
+      this.messageCount -= count;
     },
   },
 });

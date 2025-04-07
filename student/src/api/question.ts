@@ -7,20 +7,11 @@ interface UserQuery {
 export default {
   pageList: (query: UserQuery) =>
     request.post({
-      url: '/admin/question/page',
-      data: query,
-    }),
-  edit: (query: UserQuery) =>
-    request.post({
-      url: '/admin/question/edit',
+      url: '/admin/question/answer/page',
       data: query,
     }),
   select: (id: string | number) =>
     request.post({
-      url: `/admin/question/select/${id}`,
-    }),
-  deleteQuestion: (id: string | number) =>
-    request.post({
-      url: `/admin/question/delete/${id}`,
+      url: `/admin/question/answer/select/${id}`,
     }),
 };

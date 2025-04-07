@@ -37,13 +37,13 @@ export interface UserInfo {
 }
 
 export interface NotificationItem {
-  id: string;
+  id: number;
+  title: string;
   content: string;
-  type: string;
-  status: boolean;
-  collected: boolean;
-  date: string;
-  quality: string;
+  readed: boolean;
+  createTime: string;
+  sendUserName: string;
+  messageId: number;
 }
 
 export interface TRouterInfo {
