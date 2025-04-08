@@ -266,7 +266,7 @@ const formData = ref({ ...INITIAL_DATA_PAPER_DATA });
 const levelEnumText = computed(() => enumItemStore.user.levelEnum);
 const questionTypeEnumText = computed(() => enumItemStore.exam.question.typeEnum);
 const difficultyEnumText = computed(() => enumItemStore.user.difficulty);
-const paperEunmText = computed(() => enumItemStore.exam.examPaper.paperTypeEnum);
+const paperEunmText = computed(() => enumItemStore.exam.examPaper.paperTypeEnum.filter((item) => item.key !== 3));
 const subjects = computed(() => examStore.subjects);
 const FORM_RULES: any = ref({
   level: [{ required: true, message: '请选择年级', trigger: 'change' }],

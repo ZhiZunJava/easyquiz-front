@@ -17,7 +17,7 @@ export const useUserStore = defineStore('user', {
     async login(query: any) {
       await user.login(query).then(() => {
         this.userName = query.userName;
-        Cookies.set('studentUserName', query.userName, { expires: 60 });
+        Cookies.set('studentUserName', query.userName, { expires: 720 });
       });
     },
     async register(query: any) {
@@ -28,7 +28,7 @@ export const useUserStore = defineStore('user', {
     async getUserInfo() {
       await user.getCurrentUser().then((res) => {
         this.userInfo = res.response;
-        Cookies.set('studentUserInfo', res.response, { expires: 60 });
+        Cookies.set('studentUserInfo', res.response, { expires: 720 });
       });
     },
     async logout() {

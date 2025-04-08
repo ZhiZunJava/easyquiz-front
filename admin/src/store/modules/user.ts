@@ -16,13 +16,13 @@ export const useUserStore = defineStore('user', {
     async login(query: any) {
       await user.login(query).then(() => {
         this.userName = query.userName;
-        Cookies.set('adminUserName', query.userName, { expires: 60 });
+        Cookies.set('adminUserName', query.userName, { expires: 720 });
       });
     },
     async getUserInfo() {
       await user.getCurrentUser().then((res) => {
         this.userInfo = res.response;
-        Cookies.set('adminUserInfo', res.response, { expires: 60 });
+        Cookies.set('adminUserInfo', res.response, { expires: 720 });
       });
     },
     async logout() {
