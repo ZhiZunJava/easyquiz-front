@@ -41,7 +41,7 @@
                     </t-form-item>
                   </t-col>
                   <t-col :span="12">
-                    <t-form-item label="判断题数量" name="difficulty">
+                    <t-form-item label="题目整体难度" name="difficulty">
                       <t-rate
                         v-model="buildPaper.difficulty"
                         show-text
