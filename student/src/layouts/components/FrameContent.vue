@@ -35,14 +35,17 @@ const computedStyle = getComputedStyle(document.documentElement);
 const sizeXxxl = computedStyle.getPropertyValue('--td-comp-size-xxxl');
 const paddingTBXxl = computedStyle.getPropertyValue('--td-comp-paddingTB-xxl');
 
-function getOuterHeight(dom: Element) {
-  let height = dom.clientHeight;
-  const computedStyle = window.getComputedStyle(dom);
-  height += parseInt(computedStyle.marginTop, 10);
-  height += parseInt(computedStyle.marginBottom, 10);
-  height += parseInt(computedStyle.borderTopWidth, 10);
-  height += parseInt(computedStyle.borderBottomWidth, 10);
-  return height;
+function getOuterHeight(dom: Element | null) {
+  if (dom) {
+    let height = dom.clientHeight;
+    const computedStyle = window.getComputedStyle(dom);
+    height += parseInt(computedStyle.marginTop, 10);
+    height += parseInt(computedStyle.marginBottom, 10);
+    height += parseInt(computedStyle.borderTopWidth, 10);
+    height += parseInt(computedStyle.borderBottomWidth, 10);
+    return height;
+  }
+  return 0;
 }
 
 function calcHeight() {
