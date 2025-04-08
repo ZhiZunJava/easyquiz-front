@@ -16,7 +16,6 @@
 
       <login v-if="type === 'login'" />
       <register v-else @register-success="switchType('login')" />
-      <tdesign-setting />
     </div>
 
     <footer class="copyright">Copyright @ 2025 EasyQuiz. All Rights Reserved</footer>
@@ -30,7 +29,6 @@ export default {
 <script setup lang="ts">
 import { ref } from 'vue';
 
-import TdesignSetting from '@/layouts/setting.vue';
 import { t } from '@/locales';
 
 import LoginHeader from './components/Header.vue';

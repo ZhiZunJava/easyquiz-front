@@ -153,7 +153,7 @@
 </template>
 <script setup lang="ts">
 import { MessagePlugin, SubmitContext } from 'tdesign-vue-next';
-import { computed, onMounted, reactive, ref, useTemplateRef, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 import question from '@/api/question';
@@ -192,7 +192,7 @@ const enumItemStore = useEnumItem();
 const levelEnumText = computed(() => {
   return enumItemStore.user.levelEnum;
 });
-const titleRef = useTemplateRef('titleRef');
+const titleRef = ref<HTMLTextAreaElement | null>(null);
 const subjects = computed(() => useExamStore.subjects);
 const subjectFilter = ref();
 const formLoading = ref(false);
@@ -240,7 +240,7 @@ const questionAdd = () => {
   const spanText = `<span class="gapfilling-span ${uuid}">${index}</span>`;
 
   // 向文本区域插入标签
-  const textarea = titleRef.value?.$el.querySelector('textarea');
+  const textarea = titleRef.value;
   if (textarea) {
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;

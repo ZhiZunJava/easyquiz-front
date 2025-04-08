@@ -3,7 +3,6 @@ import path from 'node:path';
 import vue from '@vitejs/plugin-vue';
 import vueJsx from '@vitejs/plugin-vue-jsx';
 import { ConfigEnv, loadEnv, UserConfig } from 'vite';
-import { viteMockServe } from 'vite-plugin-mock';
 import svgLoader from 'vite-svg-loader';
 
 const CWD = process.cwd();
@@ -31,15 +30,7 @@ export default ({ mode }: ConfigEnv): UserConfig => {
       },
     },
 
-    plugins: [
-      vue(),
-      vueJsx(),
-      viteMockServe({
-        mockPath: 'mock',
-        enable: true,
-      }),
-      svgLoader(),
-    ],
+    plugins: [vue(), vueJsx(), svgLoader()],
 
     server: {
       port: 3002,
