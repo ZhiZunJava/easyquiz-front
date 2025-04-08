@@ -133,7 +133,7 @@ const isCorrectAnswer = (prefix: string) => {
         font-size: 14px;
 
         .tag {
-          width: 10px;
+          width: auto;
           font-weight: 700;
           color: #0a84ff;
           display: flex;

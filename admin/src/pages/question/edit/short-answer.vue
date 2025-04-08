@@ -14,7 +14,7 @@
         <div class="form-basic-container">
           <div class="form-basic-item">
             <div class="form-basic-container-title">
-              <span>多选题管理</span> <t-tag theme="primary">{{ formData.id ? '修改' : '新增' }}</t-tag>
+              <span>简答题管理</span> <t-tag theme="primary">{{ formData.id ? '修改' : '新增' }}</t-tag>
             </div>
             <t-row class="row-gap" :gutter="[32, 24]">
               <t-col :span="6">
