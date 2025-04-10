@@ -87,8 +87,6 @@
       >
         <template #op="slotProps">
           <t-space>
-            <t-link theme="primary"> 预览 </t-link>
-
             <t-link theme="primary" @click="editQuestion(slotProps.row)"> 编辑 </t-link>
 
             <t-link theme="danger" @click="handleClickDelete(slotProps.row.id)"> 删除</t-link>
